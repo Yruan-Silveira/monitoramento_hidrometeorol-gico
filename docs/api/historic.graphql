@@ -1,0 +1,11 @@
+query Historic($stationCode: String!, $startDate: String!, $endDate: String!, $interval: QueryInterval) {
+  historic(
+    system: Qualle_Hidrometeorologia
+    client: "casa-militar-defesa-civil-rs"
+    stationCode: $stationCode
+    startDate: $startDate
+    endDate: $endDate
+    interval: $interval
+    opts: { ordenacao: ASC }
+  )
+}

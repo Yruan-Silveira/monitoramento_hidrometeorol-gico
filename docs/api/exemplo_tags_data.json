@@ -1,0 +1,267 @@
+{
+  "data": {
+    "tags_data": {
+      "qualle_meteorologia": [
+        {
+          "codigo": "DCRS-00001",
+          "name": {
+            "prefix": "DCRS-00001",
+            "general": "Igrejinha",
+            "local": ""
+          },
+          "show": "true",
+          "timestamp": "2026-11-10T20:35:00.000",
+          "position": {
+            "bacia": "RS - Sinos",
+            "latitude": -29.57430076599121,
+            "longitude": -50.79610061645508,
+            "regiao": "Metropolitana de Porto Alegre",
+            "altitude": null,
+            "filtros": {
+              "outros": {
+                "crepdec": {
+                  "nome": {
+                    "value": "METROPOLITANA"
+                  },
+                  "codigo": {
+                    "value": 1
+                  }
+                }
+              }
+            }
+          },
+          "data": {
+            "rio": {
+              "rio_alarmes": {
+                "inundacao": {
+                  "ativo": {
+                    "value": true
+                  },
+                  "status": {
+                    "value": 0
+                  }
+                }
+              },
+              "rio_nome": null,
+              "rio_nivel": {
+                "value": 27.31
+              },
+              "rio_nivel_tendencia": {
+                "value": 0
+              },
+              "rio_area_drenagem": null,
+              "homologacao": {
+                "relacao": {
+                  "valido": {
+                    "value": true
+                  }
+                }
+              }
+            },
+            "chuva": {
+              "acumulado": {
+                "min005": {
+                  "value": 0
+                },
+                "h001": {
+                  "value": 0
+                },
+                "h003": {
+                  "value": 0
+                },
+                "h006": {
+                  "value": 0
+                },
+                "h012": {
+                  "value": 0
+                },
+                "h024": {
+                  "value": 0
+                },
+                "h048": {
+                  "value": 0
+                },
+                "h168": {
+                  "value": 55.4
+                }
+              },
+              "homologacao": {
+                "relacao": {
+                  "valido": {
+                    "value": true
+                  }
+                }
+              }
+            },
+            "pressaoatmos": {
+              "atual": {
+                "value": 1016.5
+              },
+              "historico": {
+                "diaanterior": {
+                  "media": {
+                    "value": 1020.1479166666667
+                  }
+                },
+                "diaatual": {
+                  "media": {
+                    "value": 1017.1455645161291
+                  }
+                }
+              },
+              "tendencia": {
+                "value": 0.5249999999999773
+              },
+              "homologacao": {
+                "relacao": {
+                  "valido": {
+                    "value": true
+                  }
+                }
+              }
+            },
+            "senstermica": {
+              "atual": {
+                "value": 23.28
+              },
+              "historico": {
+                "diaatual": {
+                  "media": {
+                    "value": 23.754959677419354
+                  }
+                },
+                "diaanterior": {
+                  "media": {
+                    "value": 18.621493055555554
+                  }
+                }
+              },
+              "tendencia": {
+                "value": -0.5958333333333314
+              },
+              "homologacao": {
+                "relacao": {
+                  "valido": {
+                    "value": true
+                  }
+                }
+              }
+            },
+            "radiacaosolar": {
+              "atual": {
+                "value": 0
+              },
+              "homologacao": {
+                "relacao": {
+                  "valido": {
+                    "value": true
+                  }
+                }
+              }
+            },
+            "temperatura": {
+              "atual": {
+                "value": 21.95
+              },
+              "historico": {
+                "diaanterior": {
+                  "media": {
+                    "value": 18.288854166666667
+                  }
+                },
+                "diaatual": {
+                  "media": {
+                    "value": 23.522782258064517
+                  },
+                  "maxima": {
+                    "value": 30.49
+                  },
+                  "minima": {
+                    "value": 15.3
+                  }
+                }
+              },
+              "tendencia": {
+                "value": -0.6241666666666674
+              },
+              "homologacao": {
+                "relacao": {
+                  "valido": {
+                    "value": true
+                  }
+                }
+              }
+            },
+            "umidade": {
+              "atual": {
+                "value": 61.48
+              },
+              "historico": {
+                "diaanterior": {
+                  "media": {
+                    "value": 67.85684027777778
+                  }
+                },
+                "diaatual": {
+                  "media": {
+                    "value": 50.19177419354839
+                  }
+                }
+              },
+              "tendencia": {
+                "value": 1.3241666666666632
+              },
+              "homologacao": {
+                "relacao": {
+                  "valido": {
+                    "value": true
+                  }
+                }
+              }
+            },
+            "vento": {
+              "direcao": {
+                "value": 255.1
+              },
+              "velocidade_maxima": {
+                "value": 1.91
+              },
+              "velocidade_media": {
+                "value": 0.04
+              },
+              "homologacao": {
+                "relacao": {
+                  "valido": {
+                    "value": true
+                  }
+                }
+              }
+            }
+          },
+          "type": "HidroMeteo",
+          "filter": {
+            "relacao": {
+              "tem_chuva_acumulada": true,
+              "tem_nivel_do_rio": true,
+              "tem_pressao_atmosferica": true,
+              "tem_sensacao_termica": true,
+              "tem_umidade": true,
+              "tem_vazao_do_rio": false,
+              "tem_vento": true
+            }
+          },
+          "resource": {
+            "estacao": {
+              "estado": {
+                "manutencao": {
+                  "value": false
+                }
+              }
+            }
+          }
+        }
+      ],
+      "proximaAtualizacaoEm": "2026-11-10T23:42:50.000Z"
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "data": {
+    "historic": {
+      "items": [
+        {
+          "ts": "2026-11-10T01:00:00.000",
+          "codigo": "DCRS-00001",
+          "vento_dir": 120.87,
+          "vento_vel_max": 18.11,
+          "rio_variacao": 0,
+          "rio_nivel": 27.37,
+          "chuva_taxa_med": 0,
+          "chuva_taxa_max": 0,
+          "chuva_total": 0,
+          "chuva_mm": 0,
+          "temp_media": 18.15,
+          "umid_rel": 68.69583333333334,
+          "vento_vel_med": 4.451666666666667,
+          "sens_termica": 18.52166666666667,
+          "radiacao": 0,
+          "pres_atmos": 1018.8666666666667
+        },
+        {
+          "ts": "2026-11-10T02:00:00.000",
+          "codigo": "DCRS-00001",
+          "vento_dir": 119.09,
+          "vento_vel_max": 19.01,
+          "rio_variacao": 0,
+          "rio_nivel": 27.37,
+          "chuva_taxa_med": 0,
+          "chuva_taxa_max": 0,
+          "chuva_total": 0,
+          "chuva_mm": 0,
+          "temp_media": 18.136666666666667,
+          "umid_rel": 68.375,
+          "vento_vel_med": 5.8966666666666665,
+          "sens_termica": 18.586666666666666,
+          "radiacao": 0,
+          "pres_atmos": 1018.1666666666666
+        }
+      ],
+      "totalCount": 20
+    }
+  }
+}
