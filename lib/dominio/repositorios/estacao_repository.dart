@@ -90,7 +90,12 @@ abstract interface class EstacaoRepository {
   /// com `origem == OrigemDados.cache` em vez de lançar erro.
   Future<LeituraEstacoes> listarEstacoes({bool forcarAtualizacao = false});
 
-  /// Uma estação pelo código. Lança [TipoFalha.naoEncontrado] se não existir.
+  /// Uma estação pelo código, para a tela de detalhe. Lança
+  /// [TipoFalha.naoEncontrado] se não existir.
+  ///
+  /// Diferente de [listarEstacoes], aqui a chuva de 72 h (`chuva.mm72`) vem
+  /// preenchida, somada da série histórica das últimas 72 h. Se essa consulta
+  /// falhar, a estação é devolvida mesmo assim, com `mm72` nulo.
   Future<Estacao> buscarEstacao(String codigo);
 
   /// Série de uma estação entre [inicio] e [fim], em ordem cronológica.

@@ -1,10 +1,12 @@
 import 'medicao.dart';
 import 'nivel_alerta.dart';
 
-/// Tipo da estação, derivado dos sensores que ela declara ter.
+/// Tipo da estação, derivado dos sensores que ela declara ter
+/// (`filter.relacao` na API): nível do rio e chuva = [hidrometeorologica],
+/// só nível do rio = [fluviometrica], só meteorologia = [meteorologica].
 ///
-/// Hoje as 130 estações da API são [hidrometeorologica]; os outros dois
-/// valores existem para o filtro por tipo (HM-05) não quebrar se isso mudar.
+/// Hoje as 130 estações são [hidrometeorologica]. O filtro por tipo (HM-05)
+/// continua no app, mas só aparece quando houver mais de um tipo na lista.
 enum TipoEstacao {
   hidrometeorologica('Hidrometeorológica'),
   fluviometrica('Fluviométrica'),

@@ -40,7 +40,8 @@ class EstacaoRepositoryMock implements EstacaoRepository {
     final agora = _agora();
     final bloco = _blocoAtual(agora);
     return LeituraEstacoes(
-      estacoes: _estacoes(bloco),
+      // Como a API real, a lista não traz a chuva de 72 h.
+      estacoes: [for (final estacao in _estacoes(bloco)) _semChuva72h(estacao)],
       atualizadoEm: agora,
       proximaAtualizacaoEm: bloco.add(const Duration(minutes: 12)),
     );
@@ -98,6 +99,48 @@ class EstacaoRepositoryMock implements EstacaoRepository {
       if (estacao.codigo == codigo) return estacao;
     }
     throw FalhaRepositorio(TipoFalha.naoEncontrado, codigo);
+  }
+
+  static Estacao _semChuva72h(Estacao e) {
+    final m = e.medicao;
+    final c = m.chuva;
+    return Estacao(
+      codigo: e.codigo,
+      nome: e.nome,
+      latitude: e.latitude,
+      longitude: e.longitude,
+      altitude: e.altitude,
+      regiao: e.regiao,
+      bacia: e.bacia,
+      coordenadoria: e.coordenadoria,
+      tipo: e.tipo,
+      emManutencao: e.emManutencao,
+      medicao: Medicao(
+        horario: m.horario,
+        nivelRio: m.nivelRio,
+        variacaoNivelRio: m.variacaoNivelRio,
+        alertaRio: m.alertaRio,
+        temLimiarRio: m.temLimiarRio,
+        chuva: ChuvaAcumulada(
+          mm5min: c.mm5min,
+          mm1h: c.mm1h,
+          mm3h: c.mm3h,
+          mm6h: c.mm6h,
+          mm12h: c.mm12h,
+          mm24: c.mm24,
+          mm48: c.mm48,
+          mm7dias: c.mm7dias,
+        ),
+        temperatura: m.temperatura,
+        sensacaoTermica: m.sensacaoTermica,
+        umidade: m.umidade,
+        pressao: m.pressao,
+        ventoVelocidadeMedia: m.ventoVelocidadeMedia,
+        ventoVelocidadeMaxima: m.ventoVelocidadeMaxima,
+        ventoDirecao: m.ventoDirecao,
+        radiacaoSolar: m.radiacaoSolar,
+      ),
+    );
   }
 
   /// Início do bloco de 5 minutos que a API já teria publicado.
