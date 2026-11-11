@@ -190,7 +190,10 @@ class EstacaoRepositoryMock implements EstacaoRepository {
         horario: t,
         nivelRio: medicao.nivelRio == null
             ? null
-            : _arredondar(medicao.nivelRio! - 0.02 * horasAtras * taxaBase + 0.08 * (onda - math.sin(semente))),
+            // O rio sobe com a chuva que caiu depois de t: quanto mais chuva
+            // até agora, mais baixo o nível estava em t. Contínuo no tempo.
+            : _arredondar(medicao.nivelRio! - 0.02 * _chuvaDepois(horasAtras, mm24, mm48, mm72) +
+                0.08 * (onda - math.sin(semente))),
         variacaoNivelRio: medicao.nivelRio == null ? null : _arredondar(0.01 * onda),
         chuva: _arredondar(taxa * horasDoBloco),
         chuvaTaxaMedia: _arredondar(taxa),
@@ -209,6 +212,14 @@ class EstacaoRepositoryMock implements EstacaoRepository {
   }
 
   static double _arredondar(double valor) => (valor * 100).round() / 100;
+
+  /// Chuva (mm) caída entre [horasAtras] e agora, interpolando os acumulados.
+  static double _chuvaDepois(double horasAtras, double mm24, double mm48, double mm72) {
+    if (horasAtras <= 24) return mm24 * horasAtras / 24;
+    if (horasAtras <= 48) return mm24 + (mm48 - mm24) * (horasAtras - 24) / 24;
+    if (horasAtras <= 72) return mm48 + (mm72 - mm48) * (horasAtras - 48) / 24;
+    return mm72;
+  }
 
   static List<Estacao> _estacoes(DateTime bloco) {
     Medicao medicao({

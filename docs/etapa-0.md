@@ -40,19 +40,22 @@ lib/
     local/                  cache e favoritos no aparelho              (a criar)
   servicos/                 Pessoa A: notificações e tarefa periódica  (a criar)
   nucleo/
+    estado/                 EstadoEstacoes: leitura atual e favoritos, compartilhados pelas telas
     tema/                   cores dos níveis e tema do app
-  telas/                    Pessoa B: uma pasta por tela
-    inicio/                 resumo das estações (HM-01)
-    estacoes/               lista, busca e filtros (HM-02, HM-05)       (a criar)
-    mapa/                   mapa com marcadores (HM-02)                 (a criar)
-    detalhe/                detalhe e gráficos (HM-03, HM-04)           (a criar)
-    sobre/                  tela explicativa (HM-10)                    (a criar)
+    formatacao.dart         números, horas e unidades no padrão brasileiro
+  telas/                    Pessoa B: uma pasta por tela (ver docs/telas.md)
+    principal/              barra inferior com as quatro abas
+    inicio/                 resumo, favoritas e estações em alerta (HM-01)
+    estacoes/               lista, busca e filtros (HM-02, HM-05)
+    mapa/                   mapa com marcadores (HM-02)
+    detalhe/                detalhe e gráficos (HM-03, HM-04, HM-06, HM-08)
+    sobre/                  tela explicativa (HM-10)
   componentes/              Pessoa B: widgets usados em mais de uma tela
 test/                       espelha a estrutura de lib/
 docs/                       documentação entregável
 ```
 
-Regra de dependência: `telas/` e `componentes/` importam só `dominio/` e `nucleo/`. Nunca importam `dados/` diretamente; quem liga as duas pontas é `injecao.dart`.
+Regra de dependência: `telas/` e `componentes/` importam só `dominio/`, `nucleo/` e uns aos outros. Nunca importam `dados/` diretamente; quem liga as duas pontas é `injecao.dart`.
 
 ## O contrato
 

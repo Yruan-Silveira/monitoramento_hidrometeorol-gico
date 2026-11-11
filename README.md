@@ -8,6 +8,7 @@ Os alertas do app são indicativos. Não são previsão garantida de enchente e 
 
 - [docs/etapa-0.md](docs/etapa-0.md): decisões da dupla, estrutura de pastas, contrato, identidade visual e pendências
 - [docs/api.md](docs/api.md): o que a API entrega, campos, erros e limitações
+- [docs/telas.md](docs/telas.md): telas, capturas, fluxo de navegação e estados de erro
 
 ## Como rodar
 
