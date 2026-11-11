@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Monitor Hidro RS</string>
+
+    <!-- Notificações (HM-07) -->
+    <string name="canal_alertas_nome">Alertas das estações favoritas</string>
+    <string name="canal_alertas_descricao">Avisa quando o nível de uma estação favorita sobe. Alerta indicativo: não substitui a Defesa Civil.</string>
+</resources>

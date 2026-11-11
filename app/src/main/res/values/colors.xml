@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Etapa 0 — cores de cada nível de alerta.
+         Mesmas cores usadas no mapa oficial da Defesa Civil RS (documentação da API). -->
+    <color name="nivel_normal">#FF69A82F</color>      <!-- verde -->
+    <color name="nivel_atencao">#FFFABA00</color>     <!-- amarelo -->
+    <color name="nivel_alerta">#FFE67819</color>      <!-- laranja -->
+    <color name="nivel_emergencia">#FFE20228</color>  <!-- vermelho -->
+    <color name="nivel_sem_dados">#FF9E9E9E</color>   <!-- cinza: sem leitura ou sem limiar -->
+</resources>
