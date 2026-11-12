@@ -1,167 +1,174 @@
 import 'package:flutter/material.dart';
 
-import '../../componentes/selo_nivel.dart';
+import '../../componentes/barra_atualizacao.dart';
+import '../../componentes/carregamento_estacoes.dart';
+import '../../componentes/item_estacao.dart';
+import '../../componentes/mensagem_falha.dart';
 import '../../dominio/modelos/estacao.dart';
 import '../../dominio/modelos/nivel_alerta.dart';
-import '../../dominio/repositorios/estacao_repository.dart';
+import '../../nucleo/estado/estado_estacoes.dart';
+import '../../nucleo/tema/cores.dart';
 
-/// Tela inicial (HM-01): resumo por nível e lista das estações, da mais
-/// grave para a menos grave.
-///
-/// Versão de partida da Etapa 0: prova que o contrato funciona de ponta a
-/// ponta. Favoritos, busca, navegação para o detalhe e acabamento ficam para
-/// as próximas semanas.
-class TelaInicio extends StatefulWidget {
-  const TelaInicio({super.key, required this.repositorio});
-
-  final EstacaoRepository repositorio;
-
-  @override
-  State<TelaInicio> createState() => _TelaInicioState();
-}
-
-class _TelaInicioState extends State<TelaInicio> {
-  late Future<LeituraEstacoes> _leitura = widget.repositorio.listarEstacoes();
-
-  Future<void> _atualizar() async {
-    final nova = widget.repositorio.listarEstacoes(forcarAtualizacao: true);
-    setState(() => _leitura = nova);
-    try {
-      await nova;
-    } on FalhaRepositorio {
-      // O FutureBuilder mostra o erro.
-    }
-  }
+/// Tela inicial (HM-01): resumo da rede por nível, as estações favoritas e
+/// as estações em atenção ou pior.
+class TelaInicio extends StatelessWidget {
+  const TelaInicio({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final estado = EstadoEstacoes.de(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Olho no Rio')),
-      body: FutureBuilder<LeituraEstacoes>(
-        future: _leitura,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final leitura = snapshot.data;
-          if (leitura == null) {
-            return _Erro(falha: snapshot.error, aoTentarDeNovo: _atualizar);
-          }
-          return RefreshIndicator(
-            onRefresh: _atualizar,
-            child: _Conteudo(leitura: leitura),
-          );
-        },
+      appBar: AppBar(
+        title: const Text('Olho no Rio'),
+        actions: [
+          IconButton(
+            tooltip: 'Atualizar',
+            icon: const Icon(Icons.refresh),
+            onPressed: estado.carregando ? null : () => estado.atualizar(forcar: true),
+          ),
+        ],
+      ),
+      body: CarregamentoEstacoes(
+        construtor: (context, estacoes) => RefreshIndicator(
+          onRefresh: () => estado.atualizar(forcar: true),
+          child: _Conteudo(estacoes: estacoes, favoritas: estado.favoritas),
+        ),
       ),
     );
   }
 }
 
 class _Conteudo extends StatelessWidget {
-  const _Conteudo({required this.leitura});
+  const _Conteudo({required this.estacoes, required this.favoritas});
 
-  final LeituraEstacoes leitura;
+  final List<Estacao> estacoes;
+  final List<Estacao> favoritas;
 
   @override
   Widget build(BuildContext context) {
-    final agora = DateTime.now();
-    final estacoes = [...leitura.estacoes]..sort(_maisGravePrimeiro);
-    final hora = TimeOfDay.fromDateTime(leitura.atualizadoEm).format(context);
+    final emAlerta = estacoes.where((e) => (e.alerta?.index ?? -1) >= NivelAlerta.atencao.index).toList()
+      ..sort(ordenarPorGravidade);
 
     return ListView(
+      padding: const EdgeInsets.only(bottom: 24),
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final nivel in NivelAlerta.values.reversed)
-                SeloNivel(
-                  nivel,
-                  rotulo: '${estacoes.where((e) => e.alerta == nivel).length} ${nivel.rotulo}',
-                ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+        const BarraAtualizacao(),
+        _ResumoRede(estacoes: estacoes),
+        const _Titulo(icone: Icons.star, texto: 'Minhas estações'),
+        if (favoritas.isEmpty)
+          const MensagemVazia(
+            icone: Icons.star_border,
+            texto: 'Toque na estrela de uma estação para acompanhá-la aqui.',
+          )
+        else
+          for (final estacao in [...favoritas]..sort(ordenarPorGravidade)) ItemEstacao(estacao: estacao),
+        const _Titulo(icone: Icons.warning_amber, texto: 'Em atenção, alerta ou emergência'),
+        if (emAlerta.isEmpty)
+          const MensagemVazia(
+            icone: Icons.check_circle_outline,
+            texto: 'Nenhuma estação acima do nível normal agora.',
+          )
+        else
+          for (final estacao in emAlerta) ItemEstacao(estacao: estacao),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 24, 16, 0),
           child: Text(
-            leitura.doCache ? 'Sem conexão. Dados salvos às $hora' : 'Atualizado às $hora',
-            style: Theme.of(context).textTheme.bodySmall,
+            'Alertas indicativos. Não substituem os comunicados da Defesa Civil. '
+            'Em emergência, ligue 199.',
+            textAlign: TextAlign.center,
           ),
         ),
-        const SizedBox(height: 8),
-        for (final estacao in estacoes) _ItemEstacao(estacao: estacao, agora: agora),
       ],
     );
   }
-
-  static int _maisGravePrimeiro(Estacao a, Estacao b) {
-    final porNivel = (b.alerta?.index ?? -1).compareTo(a.alerta?.index ?? -1);
-    return porNivel != 0 ? porNivel : a.nome.compareTo(b.nome);
-  }
 }
 
-class _ItemEstacao extends StatelessWidget {
-  const _ItemEstacao({required this.estacao, required this.agora});
+/// Mais grave primeiro; empate por nome.
+int ordenarPorGravidade(Estacao a, Estacao b) {
+  final porNivel = (b.alerta?.index ?? -1).compareTo(a.alerta?.index ?? -1);
+  return porNivel != 0 ? porNivel : a.nome.compareTo(b.nome);
+}
 
-  final Estacao estacao;
-  final DateTime agora;
+/// Quantas estações há em cada nível.
+class _ResumoRede extends StatelessWidget {
+  const _ResumoRede({required this.estacoes});
+
+  final List<Estacao> estacoes;
 
   @override
   Widget build(BuildContext context) {
-    final medicao = estacao.medicao;
-    final situacao = switch (estacao.situacao(agora)) {
-      SituacaoDado.atual => null,
-      SituacaoDado.atrasado => 'Dado atrasado',
-      SituacaoDado.ausente => 'Sem leitura',
-      SituacaoDado.manutencao => 'Em manutenção',
-    };
-    final partes = [
-      if (medicao.nivelRio != null) 'Rio ${_numero(medicao.nivelRio!)} m',
-      if (medicao.chuva.mm24 != null) 'Chuva 24 h ${_numero(medicao.chuva.mm24!)} mm',
-      ?situacao,
-    ];
-
-    return ListTile(
-      title: Text(estacao.nome),
-      subtitle: Text(partes.isEmpty ? estacao.codigo : partes.join(' · ')),
-      trailing: SeloNivel(estacao.alerta),
-    );
-  }
-
-  static String _numero(double valor) => valor.toStringAsFixed(valor % 1 == 0 ? 0 : 2).replaceAll('.', ',');
-}
-
-class _Erro extends StatelessWidget {
-  const _Erro({required this.falha, required this.aoTentarDeNovo});
-
-  final Object? falha;
-  final VoidCallback aoTentarDeNovo;
-
-  @override
-  Widget build(BuildContext context) {
-    final tipo = falha is FalhaRepositorio ? (falha! as FalhaRepositorio).tipo : null;
-    final mensagem = switch (tipo) {
-      TipoFalha.semConexao => 'Sem conexão com a internet.',
-      TipoFalha.tempoEsgotado => 'O serviço demorou demais para responder.',
-      TipoFalha.limiteExcedido => 'Muitas consultas seguidas. Aguarde um minuto.',
-      _ => 'O serviço de dados está indisponível no momento.',
-    };
-    return Center(
+    final niveis = <NivelAlerta?>[...NivelAlerta.values.reversed, null];
+    return Card(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(16),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.cloud_off, size: 48),
+            Text('${estacoes.length} estações monitoradas', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
-            Text(mensagem, textAlign: TextAlign.center),
-            const SizedBox(height: 12),
-            FilledButton(onPressed: aoTentarDeNovo, child: const Text('Tentar de novo')),
+            Row(
+              children: [
+                for (final nivel in niveis)
+                  Expanded(
+                    child: _Contador(
+                      nivel: nivel,
+                      quantidade: estacoes.where((e) => e.alerta == nivel).length,
+                    ),
+                  ),
+              ],
+            ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _Contador extends StatelessWidget {
+  const _Contador({required this.nivel, required this.quantidade});
+
+  final NivelAlerta? nivel;
+  final int quantidade;
+
+  @override
+  Widget build(BuildContext context) {
+    final rotulo = nivel?.rotulo ?? 'Sem dado';
+    return Semantics(
+      label: '$quantidade $rotulo',
+      excludeSemantics: true,
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: CoresApp.doNivel(nivel),
+            foregroundColor: CoresApp.sobreNivel(nivel),
+            child: Text('$quantidade', style: const TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          const SizedBox(height: 4),
+          Text(rotulo, style: Theme.of(context).textTheme.labelSmall, textAlign: TextAlign.center),
+        ],
+      ),
+    );
+  }
+}
+
+class _Titulo extends StatelessWidget {
+  const _Titulo({required this.icone, required this.texto});
+
+  final IconData icone;
+  final String texto;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+      child: Row(
+        children: [
+          Icon(icone, size: 20, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 8),
+          Expanded(child: Text(texto, style: Theme.of(context).textTheme.titleMedium)),
+        ],
       ),
     );
   }

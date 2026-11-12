@@ -40,7 +40,8 @@ class EstacaoRepositoryMock implements EstacaoRepository {
     final agora = _agora();
     final bloco = _blocoAtual(agora);
     return LeituraEstacoes(
-      estacoes: _estacoes(bloco),
+      // Como a API real, a lista não traz a chuva de 72 h.
+      estacoes: [for (final estacao in _estacoes(bloco)) _semChuva72h(estacao)],
       atualizadoEm: agora,
       proximaAtualizacaoEm: bloco.add(const Duration(minutes: 12)),
     );
@@ -100,6 +101,48 @@ class EstacaoRepositoryMock implements EstacaoRepository {
     throw FalhaRepositorio(TipoFalha.naoEncontrado, codigo);
   }
 
+  static Estacao _semChuva72h(Estacao e) {
+    final m = e.medicao;
+    final c = m.chuva;
+    return Estacao(
+      codigo: e.codigo,
+      nome: e.nome,
+      latitude: e.latitude,
+      longitude: e.longitude,
+      altitude: e.altitude,
+      regiao: e.regiao,
+      bacia: e.bacia,
+      coordenadoria: e.coordenadoria,
+      tipo: e.tipo,
+      emManutencao: e.emManutencao,
+      medicao: Medicao(
+        horario: m.horario,
+        nivelRio: m.nivelRio,
+        variacaoNivelRio: m.variacaoNivelRio,
+        alertaRio: m.alertaRio,
+        temLimiarRio: m.temLimiarRio,
+        chuva: ChuvaAcumulada(
+          mm5min: c.mm5min,
+          mm1h: c.mm1h,
+          mm3h: c.mm3h,
+          mm6h: c.mm6h,
+          mm12h: c.mm12h,
+          mm24: c.mm24,
+          mm48: c.mm48,
+          mm7dias: c.mm7dias,
+        ),
+        temperatura: m.temperatura,
+        sensacaoTermica: m.sensacaoTermica,
+        umidade: m.umidade,
+        pressao: m.pressao,
+        ventoVelocidadeMedia: m.ventoVelocidadeMedia,
+        ventoVelocidadeMaxima: m.ventoVelocidadeMaxima,
+        ventoDirecao: m.ventoDirecao,
+        radiacaoSolar: m.radiacaoSolar,
+      ),
+    );
+  }
+
   /// Início do bloco de 5 minutos que a API já teria publicado.
   static DateTime _blocoAtual(DateTime agora) {
     final base = agora.subtract(const Duration(minutes: 7));
@@ -147,7 +190,10 @@ class EstacaoRepositoryMock implements EstacaoRepository {
         horario: t,
         nivelRio: medicao.nivelRio == null
             ? null
-            : _arredondar(medicao.nivelRio! - 0.02 * horasAtras * taxaBase + 0.08 * (onda - math.sin(semente))),
+            // O rio sobe com a chuva que caiu depois de t: quanto mais chuva
+            // até agora, mais baixo o nível estava em t. Contínuo no tempo.
+            : _arredondar(medicao.nivelRio! - 0.02 * _chuvaDepois(horasAtras, mm24, mm48, mm72) +
+                0.08 * (onda - math.sin(semente))),
         variacaoNivelRio: medicao.nivelRio == null ? null : _arredondar(0.01 * onda),
         chuva: _arredondar(taxa * horasDoBloco),
         chuvaTaxaMedia: _arredondar(taxa),
@@ -166,6 +212,14 @@ class EstacaoRepositoryMock implements EstacaoRepository {
   }
 
   static double _arredondar(double valor) => (valor * 100).round() / 100;
+
+  /// Chuva (mm) caída entre [horasAtras] e agora, interpolando os acumulados.
+  static double _chuvaDepois(double horasAtras, double mm24, double mm48, double mm72) {
+    if (horasAtras <= 24) return mm24 * horasAtras / 24;
+    if (horasAtras <= 48) return mm24 + (mm48 - mm24) * (horasAtras - 24) / 24;
+    if (horasAtras <= 72) return mm48 + (mm72 - mm48) * (horasAtras - 48) / 24;
+    return mm72;
+  }
 
   static List<Estacao> _estacoes(DateTime bloco) {
     Medicao medicao({

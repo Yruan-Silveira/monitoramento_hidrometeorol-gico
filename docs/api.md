@@ -127,7 +127,8 @@ Observações dos testes:
 - A ordem das chaves no JSON real é diferente da do exemplo do guia: ler por nome, nunca por posição.
 - Pedindo de 00:00 a 20:00 com `HOUR_1`, vieram 20 itens, de `01:00` a `20:00`. O primeiro `ts` não coincide com o `startDate`.
 - 7 dias em `MIN_5` devolveram 2.263 itens (738 KB) e levaram 11,5 s. Para gráfico, usar `HOUR_1` ou maior.
-- **30 dias em `HOUR_6` deram erro 504 (Gateway Time-out)** na única tentativa. Não foi repetido para não gastar o limite; testar de novo antes de oferecer o período de 30 dias na tela.
+- **30 dias em `HOUR_6` deram erro 504 (Gateway Time-out) nas duas tentativas**, após 60 s. No mesmo período, `HOUR_3` respondeu em 1,9 s (238 itens) e `HOUR_12` em 5,5 s. O app usa `HOUR_3` para 30 dias e não usa `HOUR_6`.
+- Tempos medidos em 10/11/2026: 72 h em `HOUR_1` (71 itens) entre 0,3 e 1,4 s; 7 dias em `HOUR_1` (167 itens) em 0,6 s; 14 dias em `HOUR_3` em 1,0 s.
 - O guia se contradiz sobre o intervalo padrão (`MIN_5` num trecho, `MIN_10` em outro). Enviar sempre o `interval`.
 - A mesma consulta repetida em menos de 30 segundos devolve a resposta em cache do servidor.
 
@@ -147,17 +148,14 @@ Os três primeiros e o 504 foram confirmados em teste.
 
 ## O que a especificação pede e a API não entrega
 
-Três pontos precisam de decisão da dupla, e possivelmente do professor:
-
-1. **Chuva de 72h (`mm72`).** A tabela de níveis do trabalho usa 24h, 48h e 72h, mas `tags_data` só traz 24h, 48h e 7 dias. Para ter as 72h é preciso somar `chuva_mm` da `historic`, o que custa uma requisição por estação. Sugestão: calcular só para as favoritas e para a estação aberta na tela de detalhe; nas demais, classificar com 24h e 48h (`mm72` fica `null`).
-2. **Valores dos limiares do rio (HM-06).** A API informa em que faixa o rio está (status 0 a 3), mas não as cotas de atenção, alerta e inundação em metros. Não dá para desenhar as faixas de nível no gráfico do rio; dá para mostrar a situação atual e a legenda. As faixas no gráfico só são possíveis para a chuva, cuja tabela é conhecida.
-3. **Risco de alagamento (HM-08).** O requisito fala em cruzamento "feito no backend", mas a API não tem esse indicador. Sugestão adotada no modelo: `Medicao.alertaGeral`, o mais grave entre o nível do rio e o da chuva, apresentado como indicativo.
-
-Também vale saber:
-
-- **Tipo de estação (HM-05).** As 130 estações são `HidroMeteo` e declaram os mesmos sensores, então o filtro por tipo hoje não separa nada. Um filtro mais útil é "com limiar de rio" (96 estações) contra "sem limiar" (34).
-- **Município (HM-05).** Não há campo de município. O nome da estação costuma ser o município; os filtros possíveis são região, bacia e coordenadoria, e a busca por texto cobre o município.
-- **Login (JWT).** A premissa comum do trabalho cita JWT "conforme a necessidade de cada projeto". Esta API é aberta, então o app não tem tela de login.
+| Ponto | Limitação da API | Decisão (detalhes em [etapa-0.md](etapa-0.md)) |
+|---|---|---|
+| Chuva de 72 h (`mm72`) | `tags_data` só traz 24 h, 48 h e 7 dias | Somar `chuva_mm` da `historic` só na tela de detalhe e nas favoritas; na lista, classificar com 24 h e 48 h |
+| Limiares do rio (HM-06) | Só a situação (status 0 a 3), sem as cotas em metros | Rio: selo da situação e legenda, gráfico sem faixas. Chuva: gráfico acumulado com as linhas da tabela |
+| Risco de alagamento (HM-08) | Não existe o indicador | O mais grave entre rio e chuva (`Medicao.alertaGeral`), apresentado como indicativo |
+| Login (JWT) | API aberta, sem token | Sem login |
+| Tipo de estação (HM-05) | As 130 são `HidroMeteo` | Filtro por tipo só aparece com mais de um tipo; filtros úteis: região, bacia, coordenadoria e "com cota de inundação" (96 estações) |
+| Município (HM-05) | Não há campo | Busca por texto no nome da estação |
 
 ## Ritmo de consulta recomendado
 

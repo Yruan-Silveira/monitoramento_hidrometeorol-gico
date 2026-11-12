@@ -4,9 +4,11 @@ import 'variavel.dart';
 
 /// Chuva acumulada (mm) nas janelas que a API de dados atuais devolve.
 ///
-/// [mm72] não vem na consulta de dados atuais: o repositório real precisa
-/// calculá-lo somando a série histórica das últimas 72h. Enquanto não for
-/// calculado fica `null` e a classificação usa só 24h e 48h.
+/// [mm72] não vem na consulta de dados atuais. O repositório real o calcula
+/// somando a série das últimas 72 h, mas só em `buscarEstacao` (tela de
+/// detalhe) e na verificação das favoritas: calcular para as 130 estações
+/// passaria do limite de 120 requisições por minuto. Em `listarEstacoes` ele
+/// fica `null` e a classificação usa 24 h e 48 h.
 class ChuvaAcumulada {
   const ChuvaAcumulada({
     this.mm5min,
@@ -87,6 +89,10 @@ class Medicao {
 
   /// O mais grave entre rio e chuva: é a cor da estação na lista e no mapa
   /// e o indicativo de risco de alagamento (HM-08).
+  ///
+  /// A API não fornece o cruzamento rio x chuva que o HM-08 atribui ao
+  /// backend, então o app faz este cruzamento simples e o apresenta como
+  /// indicativo (ver tela explicativa, HM-10).
   NivelAlerta? get alertaGeral => NivelAlerta.maior(alertaRio, alertaChuva);
 
   /// Valor atual de uma variável ([Variavel.chuva] = acumulado de 24h).

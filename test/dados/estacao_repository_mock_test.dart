@@ -3,6 +3,7 @@ import 'package:olho_no_rio/dados/mock/estacao_repository_mock.dart';
 import 'package:olho_no_rio/dominio/modelos/estacao.dart';
 import 'package:olho_no_rio/dominio/modelos/nivel_alerta.dart';
 import 'package:olho_no_rio/dominio/modelos/serie_historica.dart';
+import 'package:olho_no_rio/dominio/regras/classificacao_chuva.dart';
 import 'package:olho_no_rio/dominio/repositorios/estacao_repository.dart';
 
 void main() {
@@ -28,6 +29,13 @@ void main() {
   test('há estação sem coordenadas, para o mapa tratar', () async {
     final leitura = await criar().listarEstacoes();
     expect(leitura.estacoes.where((e) => !e.temCoordenadas), isNotEmpty);
+  });
+
+  test('a chuva de 72 h só vem em buscarEstacao, como na API real', () async {
+    final repositorio = criar();
+    final leitura = await repositorio.listarEstacoes();
+    expect(leitura.estacoes.every((e) => e.medicao.chuva.mm72 == null), isTrue);
+    expect((await repositorio.buscarEstacao('DCRS-00012')).medicao.chuva.mm72, isNotNull);
   });
 
   test('os códigos não se repetem', () async {
@@ -69,6 +77,14 @@ void main() {
       fim: agora,
     );
     expect(serie.chuvaAcumulada(), closeTo(estacao.medicao.chuva.mm72!, 8));
+    expect(serie.chuvaAcumuladaPorPonto().last, closeTo(serie.chuvaAcumulada(), 0.001));
+  });
+
+  test('só 24 h e 72 h têm limiar de chuva para o gráfico', () {
+    const limiar = LimiarChuva(NivelAlerta.atencao, mm24: 30, mm48: 50, mm72: 60);
+    expect(PeriodoSerie.horas24.limiarChuva(limiar), 30);
+    expect(PeriodoSerie.horas72.limiarChuva(limiar), 60);
+    expect(PeriodoSerie.dias7.limiarChuva(limiar), isNull);
   });
 
   test('estação sem leitura devolve série vazia', () async {
