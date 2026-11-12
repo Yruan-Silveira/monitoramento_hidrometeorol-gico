@@ -6,12 +6,16 @@ plugins {
 
 android {
     namespace = "br.com.olhonorio.olho_no_rio"
-    compileSdk = flutter.compileSdkVersion
+    // 37: exigido pelo flutter_local_notifications 23 e pelo androidx.core 1.19.
+    // Só muda as APIs disponíveis na compilação; minSdk e targetSdk seguem iguais.
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // exigido pelo flutter_local_notifications (APIs java.time no Android antigo)
+        isCoreLibraryDesugaringEnabled = true
     }
 
     defaultConfig {
@@ -46,4 +50,8 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }

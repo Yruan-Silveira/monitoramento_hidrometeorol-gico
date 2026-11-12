@@ -1,6 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Consulta a API da Rede Hidrometeorologica (as variantes debug/profile ja tem; a release precisa desta). -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Notificacoes de nivel subindo nas favoritas (HM-07). Pedida em tempo de execucao no Android 13+. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- O WorkManager reagenda a verificacao periodica depois que o aparelho reinicia. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <application
         android:label="Olho no Rio"
         android:name="${applicationName}"

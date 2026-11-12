@@ -36,9 +36,10 @@ lib/
     repositorios/           interface EstacaoRepository
   dados/                    Pessoa A
     mock/                   EstacaoRepositoryMock (dados de exemplo)
-    api/                    cliente HTTP e conversão do JSON           (a criar)
-    local/                  cache e favoritos no aparelho              (a criar)
-  servicos/                 Pessoa A: notificações e tarefa periódica  (a criar)
+    api/                    cliente HTTP, consultas fixas, conversão do JSON e fusos
+    local/                  cache da última resposta e favoritos no aparelho
+    estacao_repository_api.dart   implementação real do contrato
+  servicos/                 Pessoa A: notificações e verificação periódica das favoritas
   nucleo/
     estado/                 EstadoEstacoes: leitura atual e favoritos, compartilhados pelas telas
     tema/                   cores dos níveis e tema do app

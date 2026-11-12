@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Icone pequeno das notificacoes: gota (silhueta branca, o Android aplica a cor). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M12,2C12,2 5,10.1 5,14.5C5,18.37 8.13,21.5 12,21.5C15.87,21.5 19,18.37 19,14.5C19,10.1 12,2 12,2ZM12,19.5C9.24,19.5 7,17.26 7,14.5C7,14.05 7.1,13.55 7.29,13L9.3,13C9.11,13.5 9,14 9,14.5C9,16.16 10.34,17.5 12,17.5L12,19.5Z" />
+</vector>
