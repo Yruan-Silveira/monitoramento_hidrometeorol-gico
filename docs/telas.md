@@ -2,7 +2,9 @@
 
 Documento das telas e dos fluxos de navegação (entregáveis da Pessoa B).
 
-As capturas foram geradas com o repositório de exemplo (`EstacaoRepositoryMock`), num celular de 412 × 892 dp. Os valores são fictícios; códigos, nomes e coordenadas das estações são reais. Antes da entrega, refazer as capturas no emulador com a API real.
+As capturas usam **dados reais** da API da Defesa Civil: a resposta de 21/11/2026 às 16:05, com 14 estações em alerta e 6 em atenção depois da chuva forte de 48 h na Serra e no Vale do Taquari. O histórico real é de Muçum/Encantado e de Piratini - Herval. Foram renderizadas num celular de 412 × 892 dp com o repositório real (`EstacaoRepositoryApi`). O mapa aparece sem o fundo do OpenStreetMap porque a renderização foi feita sem internet; no aparelho o fundo aparece normalmente.
+
+A revisão em outros tamanhos de tela está em [usabilidade.md](usabilidade.md).
 
 ## Fluxo de navegação
 
@@ -60,7 +62,7 @@ Fundo azul-rio com a gota do ícone. No Android 12 ou superior usa a tela de abe
 
 - Mapa do OpenStreetMap (na captura aparece cinza porque o teste roda sem internet) com um marcador por estação, na cor e com o ícone do nível.
 - As estações mais graves ficam por cima das outras.
-- **Legenda** recolhível, que também informa quantas estações estão sem coordenadas e por isso só aparecem na lista.
+- **Legenda** recolhível, que também informa quantas estações estão sem coordenadas e por isso só aparecem na lista. Em telas com menos de 400 dp de largura começa recolhida, para não cobrir marcadores.
 - Tocar num marcador abre um resumo (nível, rio, chuva, situação do dado) com o botão "Ver detalhes".
 
 ## Detalhe da estação (HM-03, HM-04, HM-06, HM-08, HM-09)
@@ -116,7 +118,8 @@ Os textos desta tela precisam ser validados pelo responsável técnico (HM-10).
 - Nível nunca só por cor: sempre cor, ícone e texto. Marcadores do mapa e contadores têm descrição para leitor de tela.
 - Textos em linhas com ícone quebram linha em vez de estourar a largura, então funcionam com fonte grande.
 - Tema claro e escuro, seguindo a configuração do aparelho.
-- **Pendente**: revisão de usabilidade em telas de tamanhos diferentes no emulador (celular pequeno, grande e tablet).
+- Em tablets e com o celular deitado, as telas de leitura ficam centralizadas com no máximo 640 dp de largura.
+- Revisão completa em telas de tamanhos diferentes e com fonte ampliada: [usabilidade.md](usabilidade.md).
 
 ## Testes de navegação
 
@@ -130,5 +133,7 @@ Em [test/telas/navegacao_test.dart](../test/telas/navegacao_test.dart), todos co
 - o detalhe troca período e variável do gráfico;
 - "Como é calculado?" abre a tela explicativa com seta de voltar;
 - sem conexão na abertura, aparece o erro com "Tentar de novo".
+
+E em [test/telas/tamanhos_tela_test.dart](../test/telas/tamanhos_tela_test.dart): o mesmo percurso por todas as telas em 8 configurações de tamanho e fonte, falhando se algo não couber (ver [usabilidade.md](usabilidade.md)).
 
 Rodar com `flutter test`.

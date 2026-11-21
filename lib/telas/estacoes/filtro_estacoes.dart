@@ -24,9 +24,8 @@ class FiltroEstacoes {
   final bool soFavoritas;
 
   /// Quantos filtros estão ligados (sem contar a busca por texto).
-  int get quantidadeAtivos => [regiao, bacia, coordenadoria, tipo].where((v) => v != null).length +
-      (soComCota ? 1 : 0) +
-      (soFavoritas ? 1 : 0);
+  int get quantidadeAtivos =>
+      [regiao, bacia, coordenadoria, tipo].where((v) => v != null).length + (soComCota ? 1 : 0) + (soFavoritas ? 1 : 0);
 
   List<Estacao> aplicar(List<Estacao> estacoes, {Set<String> favoritos = const {}}) {
     final busca = normalizar(texto.trim());
@@ -44,14 +43,14 @@ class FiltroEstacoes {
   }
 
   FiltroEstacoes comTexto(String texto) => FiltroEstacoes(
-        texto: texto,
-        regiao: regiao,
-        bacia: bacia,
-        coordenadoria: coordenadoria,
-        tipo: tipo,
-        soComCota: soComCota,
-        soFavoritas: soFavoritas,
-      );
+    texto: texto,
+    regiao: regiao,
+    bacia: bacia,
+    coordenadoria: coordenadoria,
+    tipo: tipo,
+    soComCota: soComCota,
+    soFavoritas: soFavoritas,
+  );
 
   /// Mantém só a busca por texto.
   FiltroEstacoes semFiltros() => FiltroEstacoes(texto: texto);

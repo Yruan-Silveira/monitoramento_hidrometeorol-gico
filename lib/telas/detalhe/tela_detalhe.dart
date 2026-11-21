@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../componentes/largura_leitura.dart';
 import '../../componentes/mensagem_falha.dart';
 import '../../componentes/selo_nivel.dart';
 import '../../componentes/situacao_dado.dart';
@@ -54,14 +55,14 @@ class _TelaDetalheState extends State<TelaDetalhe> {
   }
 
   Future<SerieHistorica> _serie(PeriodoSerie periodo) => _series.putIfAbsent(periodo, () {
-        final agora = DateTime.now();
-        return _repositorio.buscarSerie(
-          widget.codigo,
-          inicio: agora.subtract(periodo.duracao),
-          fim: agora,
-          intervalo: periodo.intervalo,
-        );
-      });
+    final agora = DateTime.now();
+    return _repositorio.buscarSerie(
+      widget.codigo,
+      inicio: agora.subtract(periodo.duracao),
+      fim: agora,
+      intervalo: periodo.intervalo,
+    );
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -80,39 +81,41 @@ class _TelaDetalheState extends State<TelaDetalhe> {
           ),
         ],
       ),
-      body: FutureBuilder<Estacao>(
-        future: _estacao,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final estacao = snapshot.data;
-          if (estacao == null) {
-            return MensagemFalha(falha: snapshot.error, aoTentarDeNovo: _recarregar);
-          }
-          return RefreshIndicator(
-            onRefresh: _recarregar,
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-              children: [
-                _Cabecalho(estacao: estacao),
-                const SizedBox(height: 12),
-                _CartaoRisco(medicao: estacao.medicao),
-                _CartaoRio(medicao: estacao.medicao),
-                _CartaoChuva(medicao: estacao.medicao),
-                _CartaoTempo(medicao: estacao.medicao),
-                _CartaoHistorico(
-                  periodo: _periodo,
-                  variavel: _variavel,
-                  serie: _serie(_periodo),
-                  aoMudarPeriodo: (p) => setState(() => _periodo = p),
-                  aoMudarVariavel: (v) => setState(() => _variavel = v),
-                  aoTentarDeNovo: () => setState(() => _series.remove(_periodo)),
-                ),
-              ],
-            ),
-          );
-        },
+      body: LarguraLeitura(
+        child: FutureBuilder<Estacao>(
+          future: _estacao,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final estacao = snapshot.data;
+            if (estacao == null) {
+              return MensagemFalha(falha: snapshot.error, aoTentarDeNovo: _recarregar);
+            }
+            return RefreshIndicator(
+              onRefresh: _recarregar,
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+                children: [
+                  _Cabecalho(estacao: estacao),
+                  const SizedBox(height: 12),
+                  _CartaoRisco(medicao: estacao.medicao),
+                  _CartaoRio(medicao: estacao.medicao),
+                  _CartaoChuva(medicao: estacao.medicao),
+                  _CartaoTempo(medicao: estacao.medicao),
+                  _CartaoHistorico(
+                    periodo: _periodo,
+                    variavel: _variavel,
+                    serie: _serie(_periodo),
+                    aoMudarPeriodo: (p) => setState(() => _periodo = p),
+                    aoMudarVariavel: (v) => setState(() => _variavel = v),
+                    aoTentarDeNovo: () => setState(() => _series.remove(_periodo)),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -170,12 +173,12 @@ class _CartaoRisco extends StatelessWidget {
                 children: [
                   Icon(CoresApp.iconeDoNivel(nivel), color: CoresApp.sobreNivel(nivel), size: 32),
                   const SizedBox(width: 8),
-                  Text(
-                    nivel?.rotulo ?? 'Sem dado',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: CoresApp.sobreNivel(nivel),
-                          fontWeight: FontWeight.bold,
-                        ),
+                  Flexible(
+                    child: Text(
+                      nivel?.rotulo ?? 'Sem dado',
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(color: CoresApp.sobreNivel(nivel), fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),
@@ -188,8 +191,9 @@ class _CartaoRisco extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   style: TextButton.styleFrom(foregroundColor: CoresApp.sobreNivel(nivel)),
-                  onPressed: () => Navigator.of(context)
-                      .push(MaterialPageRoute<void>(builder: (_) => const TelaSobre(comVoltar: true))),
+                  onPressed: () =>
+                      Navigator.of(context)
+                          .push(MaterialPageRoute<void>(builder: (_) => const TelaSobre(comVoltar: true))),
                   child: const Text('Como é calculado?'),
                 ),
               ),
@@ -231,8 +235,8 @@ class _CartaoRio extends StatelessWidget {
           variacao == null
               ? '—'
               : variacao.abs() < 0.005
-                  ? 'Estável'
-                  : '${variacao > 0 ? 'Subindo' : 'Descendo'} ${Formatar.numero(variacao.abs(), casas: 2)} m',
+              ? 'Estável'
+              : '${variacao > 0 ? 'Subindo' : 'Descendo'} ${Formatar.numero(variacao.abs(), casas: 2)} m',
           icone: variacao == null || variacao.abs() < 0.005
               ? null
               : (variacao > 0 ? Icons.arrow_upward : Icons.arrow_downward),
@@ -294,7 +298,10 @@ class _CartaoTempo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final disponiveis = [for (final v in _variaveis) if (medicao.valor(v) != null) v];
+    final disponiveis = [
+      for (final v in _variaveis)
+        if (medicao.valor(v) != null) v,
+    ];
     if (disponiveis.isEmpty) return const SizedBox.shrink();
     return _Cartao(
       icone: Icons.thermostat,
@@ -339,9 +346,7 @@ class _CartaoHistorico extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           child: SegmentedButton<PeriodoSerie>(
-            segments: [
-              for (final p in PeriodoSerie.values) ButtonSegment(value: p, label: Text(p.rotulo)),
-            ],
+            segments: [for (final p in PeriodoSerie.values) ButtonSegment(value: p, label: Text(p.rotulo))],
             selected: {periodo},
             showSelectedIcon: false,
             onSelectionChanged: (s) => aoMudarPeriodo(s.first),

@@ -18,18 +18,21 @@ class SeloNivel extends StatelessWidget {
     final corTexto = CoresApp.sobreNivel(nivel);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: CoresApp.doNivel(nivel),
-        borderRadius: BorderRadius.circular(999),
-      ),
+      decoration: BoxDecoration(color: CoresApp.doNivel(nivel), borderRadius: BorderRadius.circular(999)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(CoresApp.iconeDoNivel(nivel), size: 16, color: corTexto),
           const SizedBox(width: 4),
-          Text(
-            rotulo ?? nivel?.rotulo ?? 'Sem dado',
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(color: corTexto, fontWeight: FontWeight.w600),
+          // Em telas estreitas ou com fonte grande, o rótulo encurta com "…"
+          // em vez de estourar a linha.
+          Flexible(
+            child: Text(
+              rotulo ?? nivel?.rotulo ?? 'Sem dado',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: corTexto, fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),

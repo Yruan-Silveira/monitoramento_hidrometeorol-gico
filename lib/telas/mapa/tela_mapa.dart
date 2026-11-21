@@ -43,7 +43,9 @@ class TelaMapa extends StatelessWidget {
                       ? null
                       : CameraFit.coordinates(
                           coordinates: [for (final e in noMapa) LatLng(e.latitude!, e.longitude!)],
-                          padding: const EdgeInsets.fromLTRB(32, 64, 32, 120),
+                          // Margem proporcional: uma fixa grande deixava o
+                          // estado minúsculo com o celular deitado.
+                          padding: EdgeInsets.all(MediaQuery.sizeOf(context).shortestSide * 0.06),
                           maxZoom: 10,
                         ),
                   minZoom: 4,
@@ -73,11 +75,7 @@ class TelaMapa extends StatelessWidget {
                     ),
                 ],
               ),
-              Positioned(
-                left: 12,
-                top: 12,
-                child: _Legenda(foraDoMapa: foraDoMapa),
-              ),
+              Positioned(left: 12, top: 12, child: _Legenda(foraDoMapa: foraDoMapa)),
             ],
           );
         },
@@ -120,7 +118,8 @@ void _mostrarResumo(BuildContext context, Estacao estacao) {
     context: context,
     showDragHandle: true,
     builder: (contexto) => SafeArea(
-      child: Padding(
+      // Rola quando o painel fica baixo, como no celular deitado.
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -168,7 +167,11 @@ class _Legenda extends StatefulWidget {
 }
 
 class _LegendaState extends State<_Legenda> {
-  var _aberta = true;
+  bool? _escolhaDoUsuario;
+
+  /// Em telas estreitas a legenda aberta cobre marcadores (revisão de
+  /// usabilidade, docs/usabilidade.md): começa recolhida e abre com um toque.
+  bool get _aberta => _escolhaDoUsuario ?? MediaQuery.sizeOf(context).width >= 400;
 
   @override
   Widget build(BuildContext context) {
@@ -176,7 +179,7 @@ class _LegendaState extends State<_Legenda> {
     return Card(
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => setState(() => _aberta = !_aberta),
+        onTap: () => setState(() => _escolhaDoUsuario = !_aberta),
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Column(

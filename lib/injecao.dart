@@ -10,15 +10,13 @@ import 'servicos/tarefa_periodica.dart';
 
 /// `true` = API real da Defesa Civil; `false` = dados de exemplo (mock).
 ///
-/// Padrão: mock, até a integração da semana 4. Para rodar com a API real sem
-/// mudar o código:
+/// Padrão: API real (integração da semana 4). Para rodar com os dados de
+/// exemplo, por exemplo sem internet ou para ver todos os casos de tela:
 ///
 /// ```
-/// flutter run --dart-define=API_REAL=true
+/// flutter run --dart-define=API_REAL=false
 /// ```
-///
-/// Na integração, troque o `defaultValue` para `true`.
-const bool usarApiReal = bool.fromEnvironment('API_REAL', defaultValue: false);
+const bool usarApiReal = bool.fromEnvironment('API_REAL', defaultValue: true);
 
 /// Único ponto onde se escolhe a implementação do repositório.
 ///

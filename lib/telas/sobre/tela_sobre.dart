@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../componentes/largura_leitura.dart';
 import '../../componentes/selo_nivel.dart';
 import '../../dominio/modelos/estacao.dart';
 import '../../dominio/modelos/nivel_alerta.dart';
@@ -21,73 +22,82 @@ class TelaSobre extends StatelessWidget {
     final estilo = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(title: const Text('Sobre os dados'), automaticallyImplyLeading: comVoltar),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-        children: [
-          const _Aviso(),
-          const _Secao(
-            icone: Icons.sensors,
-            titulo: 'De onde vêm os dados',
-            texto: 'As medições vêm da Rede Hidrometeorológica da Defesa Civil do Rio Grande do Sul '
-                '(Casa Militar), com cerca de 130 estações. Cada estação mede nível do rio, chuva e '
-                'condições do tempo. Os dados são atualizados a cada 5 minutos e o histórico cobre '
-                'os últimos 3 meses.\n\n'
-                'O app mostra os valores como a Defesa Civil os publica. Sensores podem falhar ou '
-                'enviar dados ainda não homologados.',
-          ),
-          _Secao(
-            icone: Icons.water,
-            titulo: 'Situação do rio',
-            texto: 'Calculada pela Defesa Civil, comparando o nível medido com as cotas de atenção, '
-                'alerta e inundação de cada estação. Vale o nível mais alto atingido. Estações sem '
-                'cota cadastrada não têm situação do rio.',
-            extra: Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                for (final nivel in NivelAlerta.values) SeloNivel(nivel, rotulo: nivel.rotuloRio),
-                const SeloNivel(null),
-              ],
+      body: LarguraLeitura(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+          children: [
+            const _Aviso(),
+            const _Secao(
+              icone: Icons.sensors,
+              titulo: 'De onde vêm os dados',
+              texto:
+                  'As medições vêm da Rede Hidrometeorológica da Defesa Civil do Rio Grande do Sul '
+                  '(Casa Militar), com cerca de 130 estações. Cada estação mede nível do rio, chuva e '
+                  'condições do tempo. Os dados são atualizados a cada 5 minutos e o histórico cobre '
+                  'os últimos 3 meses.\n\n'
+                  'O app mostra os valores como a Defesa Civil os publica. Sensores podem falhar ou '
+                  'enviar dados ainda não homologados.',
             ),
-          ),
-          _Secao(
-            icone: Icons.water_drop,
-            titulo: 'Nível pela chuva acumulada',
-            texto: 'Calculado pelo app com a tabela abaixo. Basta uma das três condições; vale o '
-                'maior nível atingido.',
-            extra: const _TabelaChuva(),
-            rodape: 'Na lista e no mapa, o nível usa só 24 e 48 horas, porque a chuva de 72 horas é '
-                'calculada a partir do histórico e só aparece no detalhe de cada estação.',
-          ),
-          const _Secao(
-            icone: Icons.flood,
-            titulo: 'Risco de alagamento (indicativo)',
-            texto: 'É o mais grave entre a situação do rio e o nível pela chuva. É um cruzamento '
-                'simples, feito pelo app: não é um modelo de previsão e não considera relevo, '
-                'drenagem urbana nem previsão do tempo.',
-          ),
-          _Secao(
-            icone: Icons.schedule,
-            titulo: 'Dados atrasados ou ausentes',
-            texto: 'Uma leitura com mais de ${Estacao.limiteAtraso.inMinutes} minutos é marcada '
-                'como atrasada. Quando um sensor não envia dados, o valor aparece como "—" e a '
-                'estação fica cinza. Sem internet, o app mostra os últimos dados recebidos e avisa '
-                'de que horário eles são.',
-          ),
-          const _Secao(
-            icone: Icons.map,
-            titulo: 'Mapa',
-            texto: 'Mapa base © colaboradores do OpenStreetMap. Estações sem coordenadas aparecem '
-                'só na lista.',
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Olho no Rio · trabalho acadêmico de Dispositivos Móveis. '
-            'Não é um canal oficial da Defesa Civil.',
-            style: estilo.bodySmall,
-            textAlign: TextAlign.center,
-          ),
-        ],
+            _Secao(
+              icone: Icons.water,
+              titulo: 'Situação do rio',
+              texto:
+                  'Calculada pela Defesa Civil, comparando o nível medido com as cotas de atenção, '
+                  'alerta e inundação de cada estação. Vale o nível mais alto atingido. Estações sem '
+                  'cota cadastrada não têm situação do rio.',
+              extra: Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  for (final nivel in NivelAlerta.values) SeloNivel(nivel, rotulo: nivel.rotuloRio),
+                  const SeloNivel(null),
+                ],
+              ),
+            ),
+            _Secao(
+              icone: Icons.water_drop,
+              titulo: 'Nível pela chuva acumulada',
+              texto:
+                  'Calculado pelo app com a tabela abaixo. Basta uma das três condições; vale o '
+                  'maior nível atingido.',
+              extra: const _TabelaChuva(),
+              rodape:
+                  'Na lista e no mapa, o nível usa só 24 e 48 horas, porque a chuva de 72 horas é '
+                  'calculada a partir do histórico e só aparece no detalhe de cada estação.',
+            ),
+            const _Secao(
+              icone: Icons.flood,
+              titulo: 'Risco de alagamento (indicativo)',
+              texto:
+                  'É o mais grave entre a situação do rio e o nível pela chuva. É um cruzamento '
+                  'simples, feito pelo app: não é um modelo de previsão e não considera relevo, '
+                  'drenagem urbana nem previsão do tempo.',
+            ),
+            _Secao(
+              icone: Icons.schedule,
+              titulo: 'Dados atrasados ou ausentes',
+              texto:
+                  'Uma leitura com mais de ${Estacao.limiteAtraso.inMinutes} minutos é marcada '
+                  'como atrasada. Quando um sensor não envia dados, o valor aparece como "—" e a '
+                  'estação fica cinza. Sem internet, o app mostra os últimos dados recebidos e avisa '
+                  'de que horário eles são.',
+            ),
+            const _Secao(
+              icone: Icons.map,
+              titulo: 'Mapa',
+              texto:
+                  'Mapa base © colaboradores do OpenStreetMap. Estações sem coordenadas aparecem '
+                  'só na lista.',
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Olho no Rio · trabalho acadêmico de Dispositivos Móveis. '
+              'Não é um canal oficial da Defesa Civil.',
+              style: estilo.bodySmall,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -167,7 +177,8 @@ class _TabelaChuva extends StatelessWidget {
     final cabecalho = Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold);
     String mm(double v) => '≥ ${Formatar.numero(v, casas: 0)}';
     return Table(
-      columnWidths: const {0: FlexColumnWidth(1.6)},
+      // A coluna do nível se ajusta ao selo; as de valores dividem o resto.
+      columnWidths: const {0: IntrinsicColumnWidth()},
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       children: [
         TableRow(
@@ -180,7 +191,10 @@ class _TabelaChuva extends StatelessWidget {
         ),
         const TableRow(
           children: [
-            Padding(padding: EdgeInsets.symmetric(vertical: 4), child: Align(alignment: Alignment.centerLeft, child: SeloNivel(NivelAlerta.normal))),
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 4, 12, 4),
+              child: Align(alignment: Alignment.centerLeft, child: SeloNivel(NivelAlerta.normal)),
+            ),
             Text('< 30'),
             Text('< 50'),
             Text('< 60'),
@@ -190,7 +204,7 @@ class _TabelaChuva extends StatelessWidget {
           TableRow(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
+                padding: const EdgeInsets.fromLTRB(0, 4, 12, 4),
                 child: Align(alignment: Alignment.centerLeft, child: SeloNivel(limiar.nivel)),
               ),
               Text(mm(limiar.mm24)),

@@ -9,6 +9,7 @@ Os alertas do app são indicativos. Não são previsão garantida de enchente e 
 - [docs/etapa-0.md](docs/etapa-0.md): decisões da dupla, estrutura de pastas, contrato, identidade visual e pendências
 - [docs/api.md](docs/api.md): o que a API entrega, campos, erros e limitações
 - [docs/telas.md](docs/telas.md): telas, capturas, fluxo de navegação e estados de erro
+- [docs/usabilidade.md](docs/usabilidade.md): revisão em telas de tamanhos diferentes e com fonte ampliada
 - [docs/permissoes.md](docs/permissoes.md): permissões do aparelho, justificativas e dados guardados
 
 ## Como rodar
@@ -31,14 +32,13 @@ flutter build appbundle          # AAB para distribuição
 
 ## Mock × API real
 
-Por padrão o app roda com dados de exemplo (`EstacaoRepositoryMock`). Para usar a API real da Defesa Civil, sem mudar código:
+Por padrão o app usa a API real da Defesa Civil. Para rodar com os dados de exemplo (`EstacaoRepositoryMock`), que cobrem todos os casos de tela e funcionam sem internet:
 
 ```bash
-flutter run --dart-define=API_REAL=true
-flutter build apk --release --dart-define=API_REAL=true
+flutter run --dart-define=API_REAL=false
 ```
 
-A escolha fica em [lib/injecao.dart](lib/injecao.dart) (`usarApiReal`); na integração final basta trocar o `defaultValue` para `true`. Com a API real o app também liga as notificações e a verificação das favoritas a cada 15 minutos (HM-07).
+A escolha fica em [lib/injecao.dart](lib/injecao.dart) (`usarApiReal`). Com a API real o app também liga as notificações e a verificação das favoritas a cada 15 minutos (HM-07).
 
 ## Camada de dados (Pessoa A)
 
@@ -52,7 +52,7 @@ A escolha fica em [lib/injecao.dart](lib/injecao.dart) (`usarApiReal`); na integ
 | `lib/dados/local/` | Cache da última resposta e preferências (favoritos, últimos níveis) |
 | `lib/servicos/` | Notificações locais e verificação periódica (WorkManager) |
 
-Para testar as notificações: rode com `API_REAL=true`, favorite uma estação e aceite a permissão. A verificação roda a cada 15 minutos com internet e só avisa quando o nível de uma favorita **sobe** para atenção ou acima. Tocar na notificação abre o detalhe da estação.
+Para testar as notificações: rode o app (com a API real, o padrão), favorite uma estação e aceite a permissão. A verificação roda a cada 15 minutos com internet e só avisa quando o nível de uma favorita **sobe** para atenção ou acima. Tocar na notificação abre o detalhe da estação.
 
 Os testes da camada (`test/dados/`, `test/servicos/`) simulam a API: sem internet, API lenta, 504 em HTML, corpo vazio, consulta recusada, estação inexistente, período inválido e limite de requisições.
 

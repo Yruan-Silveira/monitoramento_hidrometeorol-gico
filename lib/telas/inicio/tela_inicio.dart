@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../componentes/largura_leitura.dart';
 import '../../componentes/barra_atualizacao.dart';
 import '../../componentes/carregamento_estacoes.dart';
 import '../../componentes/item_estacao.dart';
@@ -28,10 +29,12 @@ class TelaInicio extends StatelessWidget {
           ),
         ],
       ),
-      body: CarregamentoEstacoes(
-        construtor: (context, estacoes) => RefreshIndicator(
-          onRefresh: () => estado.atualizar(forcar: true),
-          child: _Conteudo(estacoes: estacoes, favoritas: estado.favoritas),
+      body: LarguraLeitura(
+        child: CarregamentoEstacoes(
+          construtor: (context, estacoes) => RefreshIndicator(
+            onRefresh: () => estado.atualizar(forcar: true),
+            child: _Conteudo(estacoes: estacoes, favoritas: estado.favoritas),
+          ),
         ),
       ),
     );
@@ -64,10 +67,7 @@ class _Conteudo extends StatelessWidget {
           for (final estacao in [...favoritas]..sort(ordenarPorGravidade)) ItemEstacao(estacao: estacao),
         const _Titulo(icone: Icons.warning_amber, texto: 'Em atenção, alerta ou emergência'),
         if (emAlerta.isEmpty)
-          const MensagemVazia(
-            icone: Icons.check_circle_outline,
-            texto: 'Nenhuma estação acima do nível normal agora.',
-          )
+          const MensagemVazia(icone: Icons.check_circle_outline, texto: 'Nenhuma estação acima do nível normal agora.')
         else
           for (final estacao in emAlerta) ItemEstacao(estacao: estacao),
         const Padding(
@@ -111,10 +111,7 @@ class _ResumoRede extends StatelessWidget {
               children: [
                 for (final nivel in niveis)
                   Expanded(
-                    child: _Contador(
-                      nivel: nivel,
-                      quantidade: estacoes.where((e) => e.alerta == nivel).length,
-                    ),
+                    child: _Contador(nivel: nivel, quantidade: estacoes.where((e) => e.alerta == nivel).length),
                   ),
               ],
             ),

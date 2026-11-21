@@ -41,13 +41,13 @@ class ItemEstacao extends StatelessWidget {
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            nivel?.rotulo ?? 'Sem dado',
-            style: tema.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
-          ),
+          Text(nivel?.rotulo ?? 'Sem dado', style: tema.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600)),
           if (medidas.isNotEmpty) Text(medidas.join(' · ')),
           if (situacao != null)
-            Text(situacao, style: TextStyle(color: tema.colorScheme.tertiary, fontStyle: FontStyle.italic)),
+            Text(
+              situacao,
+              style: TextStyle(color: tema.colorScheme.tertiary, fontStyle: FontStyle.italic),
+            ),
         ],
       ),
       isThreeLine: true,

@@ -4,21 +4,21 @@ import '../dominio/repositorios/estacao_repository.dart';
 
 /// Texto para o usuário de cada tipo de falha (HM-09).
 String textoFalha(TipoFalha? tipo) => switch (tipo) {
-      TipoFalha.semConexao => 'Sem conexão com a internet.',
-      TipoFalha.tempoEsgotado => 'O serviço de dados demorou demais para responder.',
-      TipoFalha.limiteExcedido => 'Muitas consultas seguidas. Aguarde um minuto e tente de novo.',
-      TipoFalha.naoEncontrado => 'Estação não encontrada.',
-      TipoFalha.periodoInvalido => 'O histórico só cobre os últimos 3 meses.',
-      TipoFalha.respostaInvalida => 'O serviço de dados respondeu de forma inesperada.',
-      TipoFalha.servicoIndisponivel || null => 'O serviço de dados está indisponível no momento.',
-    };
+  TipoFalha.semConexao => 'Sem conexão com a internet.',
+  TipoFalha.tempoEsgotado => 'O serviço de dados demorou demais para responder.',
+  TipoFalha.limiteExcedido => 'Muitas consultas seguidas. Aguarde um minuto e tente de novo.',
+  TipoFalha.naoEncontrado => 'Estação não encontrada.',
+  TipoFalha.periodoInvalido => 'O histórico só cobre os últimos 3 meses.',
+  TipoFalha.respostaInvalida => 'O serviço de dados respondeu de forma inesperada.',
+  TipoFalha.servicoIndisponivel || null => 'O serviço de dados está indisponível no momento.',
+};
 
 IconData _iconeFalha(TipoFalha? tipo) => switch (tipo) {
-      TipoFalha.semConexao => Icons.wifi_off,
-      TipoFalha.tempoEsgotado => Icons.hourglass_empty,
-      TipoFalha.naoEncontrado => Icons.search_off,
-      _ => Icons.cloud_off,
-    };
+  TipoFalha.semConexao => Icons.wifi_off,
+  TipoFalha.tempoEsgotado => Icons.hourglass_empty,
+  TipoFalha.naoEncontrado => Icons.search_off,
+  _ => Icons.cloud_off,
+};
 
 /// Mensagem de erro de tela inteira, com botão para tentar de novo.
 class MensagemFalha extends StatelessWidget {
@@ -70,7 +70,9 @@ class MensagemVazia extends StatelessWidget {
         children: [
           Icon(icone, color: cor),
           const SizedBox(width: 12),
-          Expanded(child: Text(texto, style: TextStyle(color: cor))),
+          Expanded(
+            child: Text(texto, style: TextStyle(color: cor)),
+          ),
         ],
       ),
     );

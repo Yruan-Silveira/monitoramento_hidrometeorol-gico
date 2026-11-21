@@ -45,10 +45,7 @@ class GraficoSerie extends StatelessWidget {
     }
 
     if (valores.isEmpty) {
-      return const SizedBox(
-        height: 120,
-        child: Center(child: Text('Sem dados desta variável no período.')),
-      );
+      return const SizedBox(height: 120, child: Center(child: Text('Sem dados desta variável no período.')));
     }
 
     var minY = valores.reduce(math.min);
@@ -64,18 +61,20 @@ class GraficoSerie extends StatelessWidget {
         if (y == null) continue;
         if (limiares.isNotEmpty && y > maxY * 1.3) break;
         maxY = math.max(maxY, y);
-        limiares.add(HorizontalLine(
-          y: y,
-          color: CoresApp.doNivel(limiar.nivel),
-          strokeWidth: 2,
-          dashArray: const [6, 4],
-          label: HorizontalLineLabel(
-            show: true,
-            alignment: Alignment.topRight,
-            style: tema.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold),
-            labelResolver: (_) => '${limiar.nivel.rotulo} ${Formatar.numero(y, casas: 0)} mm',
+        limiares.add(
+          HorizontalLine(
+            y: y,
+            color: CoresApp.doNivel(limiar.nivel),
+            strokeWidth: 2,
+            dashArray: const [6, 4],
+            label: HorizontalLineLabel(
+              show: true,
+              alignment: Alignment.topRight,
+              style: tema.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold),
+              labelResolver: (_) => '${limiar.nivel.rotulo} ${Formatar.numero(y, casas: 0)} mm',
+            ),
           ),
-        ));
+        );
       }
     }
 
@@ -117,10 +116,16 @@ class GraficoSerie extends StatelessWidget {
                   sideTitles: SideTitles(
                     showTitles: true,
                     reservedSize: 48,
+                    // Mínimo e máximo caem colados numa linha da grade e os
+                    // rótulos se sobrepõem; ficam só os das linhas.
+                    minIncluded: false,
+                    maxIncluded: false,
                     getTitlesWidget: (valor, meta) => SideTitleWidget(
                       meta: meta,
-                      child: Text(Formatar.numero(valor, casas: casas == 2 ? 2 : (yMax - yMin < 5 ? 1 : 0)),
-                          style: tema.textTheme.labelSmall),
+                      child: Text(
+                        Formatar.numero(valor, casas: casas == 2 ? 2 : (yMax - yMin < 5 ? 1 : 0)),
+                        style: tema.textTheme.labelSmall,
+                      ),
                     ),
                   ),
                 ),
@@ -133,8 +138,13 @@ class GraficoSerie extends StatelessWidget {
                     maxIncluded: false,
                     getTitlesWidget: (valor, meta) {
                       final horario = inicio.add(Duration(minutes: (valor * 60).round()));
-                      final texto = periodo.duracao.inHours <= 72 ? Formatar.hora(horario) : Formatar.dia(horario);
-                      return SideTitleWidget(meta: meta, child: Text(texto, style: tema.textTheme.labelSmall));
+                      // Com um rótulo por dia ou mais, a hora seria sempre a
+                      // mesma ("17:00, 17:00…"): mostra a data.
+                      final texto = _intervaloEixoX(xMax) < 24 ? Formatar.hora(horario) : Formatar.dia(horario);
+                      return SideTitleWidget(
+                        meta: meta,
+                        child: Text(texto, style: tema.textTheme.labelSmall),
+                      );
                     },
                   ),
                 ),

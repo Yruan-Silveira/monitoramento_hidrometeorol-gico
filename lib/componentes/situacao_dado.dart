@@ -31,15 +31,14 @@ class AvisoSituacao extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: esquema.tertiaryContainer,
-        borderRadius: BorderRadius.circular(12),
-      ),
+      decoration: BoxDecoration(color: esquema.tertiaryContainer, borderRadius: BorderRadius.circular(12)),
       child: Row(
         children: [
           Icon(icone, size: 20, color: esquema.onTertiaryContainer),
           const SizedBox(width: 8),
-          Expanded(child: Text(texto, style: TextStyle(color: esquema.onTertiaryContainer))),
+          Expanded(
+            child: Text(texto, style: TextStyle(color: esquema.onTertiaryContainer)),
+          ),
         ],
       ),
     );
