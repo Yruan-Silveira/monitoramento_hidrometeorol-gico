@@ -96,6 +96,7 @@ Fundo azul-rio com a gota do ícone. No Android 12 ou superior usa a tela de abe
 - Tabela de limiares da chuva, gerada do mesmo código que faz o cálculo (`limiaresChuva`), então não fica desatualizada.
 - Como o risco de alagamento é calculado e o que ele não considera.
 - O que significa dado atrasado ou ausente.
+- **Notificações** (HM-07): como funcionam e o botão **Enviar notificação de teste**, que pede a permissão se preciso e envia uma notificação na hora. Serve para demonstrar o critério de aceite "recebimento de uma notificação de teste" sem esperar o nível de uma favorita subir.
 
 Os textos desta tela precisam ser validados pelo responsável técnico (HM-10).
 

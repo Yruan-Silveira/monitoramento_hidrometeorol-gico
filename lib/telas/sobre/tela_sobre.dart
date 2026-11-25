@@ -5,6 +5,7 @@ import '../../componentes/selo_nivel.dart';
 import '../../dominio/modelos/estacao.dart';
 import '../../dominio/modelos/nivel_alerta.dart';
 import '../../dominio/regras/classificacao_chuva.dart';
+import '../../nucleo/estado/estado_estacoes.dart';
 import '../../nucleo/formatacao.dart';
 
 /// Tela explicativa (HM-10): fontes dos dados, como os níveis são
@@ -82,6 +83,7 @@ class TelaSobre extends StatelessWidget {
                   'estação fica cinza. Sem internet, o app mostra os últimos dados recebidos e avisa '
                   'de que horário eles são.',
             ),
+            const _SecaoNotificacoes(),
             const _Secao(
               icone: Icons.map,
               titulo: 'Mapa',
@@ -99,6 +101,60 @@ class TelaSobre extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Como funcionam as notificações (HM-07) e o botão de teste, usado para
+/// demonstrar o critério de aceite "recebimento de uma notificação de teste".
+class _SecaoNotificacoes extends StatefulWidget {
+  const _SecaoNotificacoes();
+
+  @override
+  State<_SecaoNotificacoes> createState() => _SecaoNotificacoesState();
+}
+
+class _SecaoNotificacoesState extends State<_SecaoNotificacoes> {
+  var _enviando = false;
+
+  Future<void> _enviar(Future<bool> Function() enviar) async {
+    setState(() => _enviando = true);
+    final mensagens = ScaffoldMessenger.of(context);
+    String texto;
+    try {
+      texto = await enviar()
+          ? 'Notificação enviada. Confira a barra de notificações.'
+          : 'Notificações bloqueadas. Ative em Configurações > Apps > Olho no Rio > Notificações.';
+    } catch (_) {
+      texto = 'Não foi possível enviar a notificação neste aparelho.';
+    }
+    if (!mounted) return;
+    setState(() => _enviando = false);
+    mensagens.showSnackBar(SnackBar(content: Text(texto)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final enviar = EstadoEstacoes.de(context).enviarNotificacaoTeste;
+    return _Secao(
+      icone: Icons.notifications_active,
+      titulo: 'Notificações',
+      texto:
+          'Com a internet ligada, o app confere suas estações favoritas a cada 15 minutos, '
+          'mesmo fechado, e avisa quando o nível de uma delas sobe para atenção, alerta ou '
+          'emergência. A permissão é pedida quando você marca a primeira favorita.',
+      extra: enviar == null
+          ? null
+          : Align(
+              alignment: Alignment.centerLeft,
+              child: FilledButton.tonalIcon(
+                onPressed: _enviando ? null : () => _enviar(enviar),
+                icon: _enviando
+                    ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Icon(Icons.notifications),
+                label: const Text('Enviar notificação de teste'),
+              ),
+            ),
     );
   }
 }

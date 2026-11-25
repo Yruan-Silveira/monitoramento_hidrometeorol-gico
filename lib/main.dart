@@ -9,10 +9,13 @@ import 'telas/detalhe/tela_detalhe.dart';
 import 'telas/principal/tela_principal.dart';
 
 void main() {
-  runApp(OlhoNoRioApp(
-    repositorio: criarRepositorio(),
-    estacaoTocada: estacaoTocadaNaNotificacao,
-  ));
+  runApp(
+    OlhoNoRioApp(
+      repositorio: criarRepositorio(),
+      estacaoTocada: estacaoTocadaNaNotificacao,
+      enviarNotificacaoTeste: enviarNotificacaoTeste,
+    ),
+  );
 }
 
 class OlhoNoRioApp extends StatefulWidget {
@@ -22,9 +25,14 @@ class OlhoNoRioApp extends StatefulWidget {
     this.mostrarMapaBase = true,
     this.atualizacaoAutomatica = const Duration(minutes: 5),
     this.estacaoTocada,
+    this.enviarNotificacaoTeste,
   });
 
   final EstacaoRepository repositorio;
+
+  /// Envia a notificação de teste do botão da tela "Sobre". `null` esconde
+  /// o botão.
+  final Future<bool> Function()? enviarNotificacaoTeste;
 
   /// Código da estação cuja notificação foi tocada: abre o detalhe dela.
   /// `null` nos testes.
@@ -41,8 +49,11 @@ class OlhoNoRioApp extends StatefulWidget {
 }
 
 class _OlhoNoRioAppState extends State<OlhoNoRioApp> {
-  late final EstadoEstacoes _estado =
-      EstadoEstacoes(widget.repositorio, intervaloAtualizacao: widget.atualizacaoAutomatica)..iniciar();
+  late final EstadoEstacoes _estado = EstadoEstacoes(
+    widget.repositorio,
+    intervaloAtualizacao: widget.atualizacaoAutomatica,
+    enviarNotificacaoTeste: widget.enviarNotificacaoTeste,
+  )..iniciar();
 
   final _navegador = GlobalKey<NavigatorState>();
 

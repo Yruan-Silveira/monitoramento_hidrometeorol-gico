@@ -27,9 +27,23 @@ EstacaoRepository criarRepositorio() {
   if (!usarApiReal) return EstacaoRepositoryMock();
   WidgetsFlutterBinding.ensureInitialized();
   unawaited(inicializarServicos());
-  return EstacaoRepositoryApi(aoFavoritar: () async {
-    await Notificacoes.pedirPermissao();
-  });
+  return EstacaoRepositoryApi(
+    aoFavoritar: () async {
+      await Notificacoes.pedirPermissao();
+    },
+  );
+}
+
+/// Envia uma notificação de teste (critério de aceite: "demonstrar o
+/// recebimento de uma notificação de teste"). Pede a permissão antes, se
+/// preciso. Devolve `false` se o usuário não permitir notificações.
+///
+/// Funciona também com o mock: não depende da API.
+Future<bool> enviarNotificacaoTeste() async {
+  await Notificacoes.inicializar();
+  if (!await Notificacoes.pedirPermissao()) return false;
+  await Notificacoes.enviarTeste();
+  return true;
 }
 
 /// Código da estação cuja notificação o usuário tocou (HM-07). O `main.dart`

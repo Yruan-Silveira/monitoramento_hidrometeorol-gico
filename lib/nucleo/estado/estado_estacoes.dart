@@ -11,9 +11,17 @@ import '../../dominio/repositorios/estacao_repository.dart';
 /// Fica acima do `Navigator` (ver `main.dart`), então qualquer tela o
 /// encontra com [EstadoEstacoes.de].
 class EstadoEstacoes extends ChangeNotifier {
-  EstadoEstacoes(this.repositorio, {this.intervaloAtualizacao = const Duration(minutes: 5)});
+  EstadoEstacoes(
+    this.repositorio, {
+    this.intervaloAtualizacao = const Duration(minutes: 5),
+    this.enviarNotificacaoTeste,
+  });
 
   final EstacaoRepository repositorio;
+
+  /// Envia uma notificação de teste e devolve se ela foi permitida. Vem de
+  /// `injecao.dart`; `null` esconde o botão (por exemplo, em testes).
+  final Future<bool> Function()? enviarNotificacaoTeste;
 
   /// De quanto em quanto tempo a lista se atualiza sozinha enquanto o app
   /// está aberto. A API publica dado novo a cada 5 minutos. `null` desliga.
@@ -40,9 +48,9 @@ class EstadoEstacoes extends ChangeNotifier {
   Set<String> get favoritos => Set.unmodifiable(_favoritos);
 
   List<Estacao> get favoritas => [
-        for (final estacao in estacoes)
-          if (_favoritos.contains(estacao.codigo)) estacao,
-      ];
+    for (final estacao in estacoes)
+      if (_favoritos.contains(estacao.codigo)) estacao,
+  ];
 
   bool ehFavorita(String codigo) => _favoritos.contains(codigo);
 
@@ -109,6 +117,5 @@ class EstadoEstacoes extends ChangeNotifier {
 
 /// Disponibiliza o [EstadoEstacoes] para a árvore de widgets.
 class EscopoEstacoes extends InheritedNotifier<EstadoEstacoes> {
-  const EscopoEstacoes({super.key, required EstadoEstacoes estado, required super.child})
-      : super(notifier: estado);
+  const EscopoEstacoes({super.key, required EstadoEstacoes estado, required super.child}) : super(notifier: estado);
 }

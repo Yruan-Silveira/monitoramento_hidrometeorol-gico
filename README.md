@@ -52,7 +52,7 @@ A escolha fica em [lib/injecao.dart](lib/injecao.dart) (`usarApiReal`). Com a AP
 | `lib/dados/local/` | Cache da última resposta e preferências (favoritos, últimos níveis) |
 | `lib/servicos/` | Notificações locais e verificação periódica (WorkManager) |
 
-Para testar as notificações: rode o app (com a API real, o padrão), favorite uma estação e aceite a permissão. A verificação roda a cada 15 minutos com internet e só avisa quando o nível de uma favorita **sobe** para atenção ou acima. Tocar na notificação abre o detalhe da estação.
+Para demonstrar as notificações: na aba **Sobre**, toque em **Enviar notificação de teste** e aceite a permissão; a notificação chega na hora. No uso normal, favorite uma estação: a verificação roda a cada 15 minutos com internet e só avisa quando o nível de uma favorita **sobe** para atenção ou acima. Tocar na notificação abre o detalhe da estação.
 
 Os testes da camada (`test/dados/`, `test/servicos/`) simulam a API: sem internet, API lenta, 504 em HTML, corpo vazio, consulta recusada, estação inexistente, período inválido e limite de requisições.
 
